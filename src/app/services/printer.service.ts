@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Printer } from '../models/printer.model';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PrinterService {
-  private printers: Printer[] = [
+  private printersSubject: BehaviorSubject<Printer[]> = new BehaviorSubject<Printer[]>([
+    // Initialize with your printers data
     {
       id: 12,
       type: 'Powder printer',
@@ -24,24 +26,47 @@ export class PrinterService {
       commissioningDate: new Date('2019-08-10'),
       imageUrl: 'assets/images/resin-printer.png',
     },
-    // Add more printers, alternating types
-  ];
+    // Add more printers as needed
+  ]);
 
-  getPrinters(): Printer[] {
-    return this.printers;
+  constructor() {}
+
+  getPrinters(): Observable<Printer[]> {
+    return this.printersSubject.asObservable();
   }
 
-  sortPrinters(criteria: string): Printer[] {
-    return this.printers.sort((a, b) => {
-      if (criteria === 'id') {
-        return a.id - b.id;
-      } else if (criteria === 'type') {
-        return a.type.localeCompare(b.type);
-      } else if (criteria === 'date') {
-        return a.commissioningDate.getTime() - b.commissioningDate.getTime();
-      } else {
-        return 0;
-      }
-    });
+  getCurrentPrinters(): Printer[] {
+    return this.printersSubject.getValue();
   }
+
+  getPrinterById(id: number): Printer | undefined {
+    return this.getCurrentPrinters().find((printer) => printer.id === id);
+  }  
+
+  getImageUrlForType(printerType: string): string {
+    switch (printerType) {
+      case 'Powder printer':
+        return 'assets/images/powder-printer.png';
+      case 'Wire printer':
+        return 'assets/images/wire-printer.png';
+      case 'Resin printer':
+        return 'assets/images/resin-printer.png';
+      // Add more cases for additional printer types
+      default:
+        return 'assets/images/powder-printer.png'; // A default image
+    }
+  }
+  
+
+  updatePrinter(originalId: number, updatedPrinter: Printer): void {
+    const printers = this.getCurrentPrinters();
+    const index = printers.findIndex((printer) => printer.id === originalId);
+    if (index !== -1) {
+      printers[index] = { ...updatedPrinter };
+      this.printersSubject.next(printers);
+    } else {
+      console.error(`Printer with ID ${originalId} not found.`);
+    }
+  }
+  
 }

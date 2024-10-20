@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="saveAndReturn()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Edit Printer</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Printer Info Container -->
+  <div class="printer-info-container">
+    <ion-thumbnail class="printer-image">
+      <img [src]="printer.imageUrl" alt="{{ printer.type }}" />
+    </ion-thumbnail>
+    <div class="printer-details">
+      <h2>{{ printer.type }} #{{ printer.id }}</h2>
+      <p>Commissioned on: {{ commissioningDateString }}</p>
+    </div>
+  </div>
+
+  <!-- Edit Form -->
+  <form (ngSubmit)="savePrinter()" #printerForm="ngForm" class="edit-form">
+    <!-- Edit Options -->
+    <ion-item>
+      <ion-label position="stacked">Printer Type</ion-label>
+      <ion-select
+        [(ngModel)]="printer.type"
+        name="type"
+        required
+        interface="popover"
+        (ionChange)="onPrinterTypeChange()"
+      >
+        <ion-select-option value="Powder printer">Powder printer</ion-select-option>
+        <ion-select-option value="Wire printer">Wire printer</ion-select-option>
+        <ion-select-option value="Resin printer">Resin printer</ion-select-option>
+        <!-- Add more types if needed -->
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Identification Number</ion-label>
+      <ion-input
+        [(ngModel)]="printer.id"
+        name="id"
+        type="number"
+        required
+        #idInput="ngModel"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Commissioning Date</ion-label>
+      <ion-input
+        [(ngModel)]="commissioningDateString"
+        name="commissioningDate"
+        required
+        (ionChange)="onDateChange()"
+      ></ion-input>
+    </ion-item>
+
+    <!-- Buttons Container -->
+    <div class="button-container">
+      <ion-button expand="block" type="submit" color="primary" [disabled]="printerForm.invalid">
+        Save Changes
+      </ion-button>
+      <ion-button expand="block" color="secondary" (click)="scheduleMaintenance()">
+        Schedule Maintenance
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

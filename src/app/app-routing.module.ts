@@ -14,15 +14,15 @@ const routes: Routes = [
         (m) => m.PrinterListPageModule
       ),
   },
-  // Future route for printer detail page
-  // {
-  //   path: 'printer-detail/:id',
-  //   loadChildren: () =>
-  //     import('./pages/printer-detail/printer-detail.module').then(
-  //       (m) => m.PrinterDetailPageModule
-  //     ),
-  // },
+  {
+    path: 'printer-detail/:id',
+    loadChildren: () =>
+      import('./pages/printer-detail/printer-detail.module').then(
+        (m) => m.PrinterDetailPageModule
+      ),
+  },
 ];
+
 
 @NgModule({
   imports: [
