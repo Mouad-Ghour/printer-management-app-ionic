@@ -17,7 +17,7 @@
     </ion-thumbnail>
     <div class="printer-details">
       <h2>{{ printer.type }} #{{ printer.id }}</h2>
-      <p>Commissioned on: {{ commissioningDateString }}</p>
+      <p>Commissioned on: {{ printer.commissioningDate | date: 'dd/MM/yyyy' }}</p>
     </div>
   </div>
 
@@ -50,16 +50,28 @@
         #idInput="ngModel"
       ></ion-input>
     </ion-item>
+<!-- calendar option for edit (too big and doesnt look as in the assignment) 
+    <ion-item>
+      <ion-label position="stacked">Commissioning Date</ion-label>
+      <ion-datetime
+        [(ngModel)]="printer.commissioningDate"
+        name="commissioningDate"
+        required
+        presentation="date"
+        displayFormat="DD/MM/YYYY"
+        (ionChange)="onDateChange($event)"
+      ></ion-datetime>
+    </ion-item> -->
 
     <ion-item>
       <ion-label position="stacked">Commissioning Date</ion-label>
       <ion-input
-        [(ngModel)]="commissioningDateString"
-        name="commissioningDate"
-        required
-        (ionChange)="onDateChange()"
+        [value]="commissioningDateString"
+        readonly
+        (click)="openDatePicker()"
       ></ion-input>
     </ion-item>
+    
 
     <!-- Buttons Container -->
     <div class="button-container">

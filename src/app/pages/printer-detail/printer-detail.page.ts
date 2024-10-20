@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PrinterService } from '../../services/printer.service';
 import { Printer } from '../../models/printer.model';
-import { ToastController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
+import { DatePickerComponent } from '../../components/date-picker/date-picker.component';
 
 @Component({
   selector: 'app-printer-detail',
@@ -19,6 +20,7 @@ export class PrinterDetailPage implements OnInit {
     private route: ActivatedRoute,
     private printerService: PrinterService,
     private toastController: ToastController,
+    private modalController: ModalController,
     private router: Router
   ) {}
 
@@ -53,8 +55,8 @@ export class PrinterDetailPage implements OnInit {
     this.printer.imageUrl = this.printerService.getImageUrlForType(this.printer.type);
   }
 
-  onDateChange() {
-    this.printer.commissioningDate = this.parseDate(this.commissioningDateString);
+  onDateChange(event: any) {
+    this.printer.commissioningDate = new Date(event.detail.value);
   }
 
   formatDate(date: Date): string {
@@ -65,8 +67,27 @@ export class PrinterDetailPage implements OnInit {
   }
 
   parseDate(dateString: string): Date {
-    const [day, month, year] = dateString.split('/');
-    return new Date(+year, +month - 1, +day);
+    // const [day, month, year] = dateString.split('/');
+    // return new Date(+year, +month - 1, +day);
+    return new Date(dateString);
+  }
+  
+  async openDatePicker() {
+    const modal = await this.modalController.create({
+      component: DatePickerComponent,
+      componentProps: {
+        selectedDate: this.printer.commissioningDate,
+      },
+    });
+  
+    modal.onDidDismiss().then((data) => {
+      if (data.data) {
+        this.printer.commissioningDate = data.data;
+        this.commissioningDateString = this.formatDate(this.printer.commissioningDate);
+      }
+    });
+  
+    return await modal.present();
   }
 
   async savePrinter() {
