@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="app-title">3D Printers</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Sorting Options -->
+  <div class="sorting-options">
+    <ion-segment [(ngModel)]="sortCriteria" (ionChange)="sortPrinters()">
+      <ion-segment-button value="id">
+        <ion-label>ID</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="type">
+        <ion-label>Type</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="date">
+        <ion-label>Date</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Printer List -->
+  <ion-list>
+    <ion-item
+      *ngFor="let printer of printers; let i = index"
+      [ngClass]="{ 'alternate-item': i % 2 === 0 }"
+      [routerLink]="['/printer-detail', printer.id]"
+    >
+      <ion-thumbnail slot="start">
+        <img [src]="printer.imageUrl" />
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ printer.type }} #{{ printer.id }}</h2>
+        <p>Commissioned on: {{ printer.commissioningDate | date: 'dd/MM/yyyy' }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+

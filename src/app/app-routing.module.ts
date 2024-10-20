@@ -3,14 +3,25 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    path: '',
+    redirectTo: 'printer-list',
+    pathMatch: 'full',
   },
   {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full'
+    path: 'printer-list',
+    loadChildren: () =>
+      import('./pages/printer-list/printer-list.module').then(
+        (m) => m.PrinterListPageModule
+      ),
   },
+  // Future route for printer detail page
+  // {
+  //   path: 'printer-detail/:id',
+  //   loadChildren: () =>
+  //     import('./pages/printer-detail/printer-detail.module').then(
+  //       (m) => m.PrinterDetailPageModule
+  //     ),
+  // },
 ];
 
 @NgModule({

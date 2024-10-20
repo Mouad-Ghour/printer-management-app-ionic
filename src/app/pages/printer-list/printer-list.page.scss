@@ -1,0 +1,49 @@
+.app-title {
+    font-weight: bold;
+  }
+
+// .sorting-options {
+//   padding: 10px;
+// }
+
+// ion-segment {
+//   --background: #f0f0f0;
+//   --indicator-color: #ffffff00;
+// }
+
+// ion-segment-button {
+//   --color-checked: #000;
+//   --background: #e0e0e0;
+//   border-radius: 20px;
+//   padding: 5px 10px;
+// }
+
+// ion-segment-button[checked] {
+//   background: #d0d0d0;
+// }
+
+
+ion-item {
+--padding-start: 10px;
+--padding-end: 10px;
+--inner-padding-top: 10px;
+--inner-padding-bottom: 10px;
+}
+
+ion-thumbnail img {
+border-radius: 8px;
+}
+
+.alternate-item {
+background-color: #f9f9f9;
+}
+
+ion-label h2 {
+font-size: 16px;
+font-weight: bold;
+}
+
+ion-label p {
+font-size: 14px;
+color: #666;
+}
