@@ -4,6 +4,7 @@ import { ModalController } from '@ionic/angular';
 @Component({
   selector: 'app-date-picker',
   templateUrl: './date-picker.component.html',
+  styleUrls: ['./date-picker.component.scss'],
 })
 export class DatePickerComponent {
   @Input() selectedDate!: Date;
@@ -11,7 +12,8 @@ export class DatePickerComponent {
   constructor(private modalController: ModalController) {}
 
   onDateChange(event: any) {
-    this.selectedDate = new Date(event.detail.value);
+    const selectedISODate = event.detail.value;
+    this.selectedDate = new Date(selectedISODate);
   }
 
   async confirm() {

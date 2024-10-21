@@ -1,12 +1,16 @@
-.calendar {
+.calendar-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
-
-    
-}
-
-ion-datetime {
-    margin: auto;
-}
+    padding: 20px;
+  }
+  
+//   ion-datetime {
+//     --width: 100%;
+//     --max-width: 400px;
+//     --background: #f8f8f8;
+//     --border-radius: 12px;
+//     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+//   }
+  

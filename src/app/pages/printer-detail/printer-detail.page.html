@@ -1,3 +1,5 @@
+<!-- src/app/pages/printer-detail/printer-detail.page.html -->
+
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -11,9 +13,9 @@
 
 <ion-content>
   <!-- Printer Info Container -->
-  <div class="printer-info-container">
+  <div class="printer-info-container" *ngIf="printer">
     <ion-thumbnail class="printer-image">
-      <img [src]="printer.imageUrl" alt="{{ printer.type }}" />
+      <img [src]="printer.imageUrl || 'assets/default-printer.png'" alt="{{ printer.type }}" />
     </ion-thumbnail>
     <div class="printer-details">
       <h2>{{ printer.type }} #{{ printer.id }}</h2>
@@ -22,8 +24,8 @@
   </div>
 
   <!-- Edit Form -->
-  <form (ngSubmit)="savePrinter()" #printerForm="ngForm" class="edit-form">
-    <!-- Edit Options -->
+  <form (ngSubmit)="savePrinter()" #printerForm="ngForm" class="edit-form" *ngIf="printer">
+    <!-- Printer Type Selection -->
     <ion-item>
       <ion-label position="stacked">Printer Type</ion-label>
       <ion-select
@@ -33,13 +35,13 @@
         interface="popover"
         (ionChange)="onPrinterTypeChange()"
       >
-        <ion-select-option value="Powder printer">Powder printer</ion-select-option>
-        <ion-select-option value="Wire printer">Wire printer</ion-select-option>
-        <ion-select-option value="Resin printer">Resin printer</ion-select-option>
-        <!-- Add more types if needed -->
+        <ion-select-option *ngFor="let type of printerTypes" [value]="type">
+          {{ type }}
+        </ion-select-option>
       </ion-select>
     </ion-item>
 
+    <!-- Printer ID Input -->
     <ion-item>
       <ion-label position="stacked">Identification Number</ion-label>
       <ion-input
@@ -50,28 +52,18 @@
         #idInput="ngModel"
       ></ion-input>
     </ion-item>
-<!-- calendar option for edit (too big and doesnt look as in the assignment) 
-    <ion-item>
-      <ion-label position="stacked">Commissioning Date</ion-label>
-      <ion-datetime
-        [(ngModel)]="printer.commissioningDate"
-        name="commissioningDate"
-        required
-        presentation="date"
-        displayFormat="DD/MM/YYYY"
-        (ionChange)="onDateChange($event)"
-      ></ion-datetime>
-    </ion-item> -->
 
+    <!-- Commissioning Date Input -->
     <ion-item>
-      <ion-label position="stacked">Commissioning Date</ion-label>
+      <ion-label position="stacked">Commissioning Date (DD/MM/YYYY)</ion-label>
       <ion-input
         [value]="commissioningDateString"
         readonly
-        (click)="openDatePicker()"
+        (click)="onDateInputClick()"
+        placeholder="dd/mm/yyyy"
+        name="commissioningDate"
       ></ion-input>
     </ion-item>
-    
 
     <!-- Buttons Container -->
     <div class="button-container">

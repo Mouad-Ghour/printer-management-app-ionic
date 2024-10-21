@@ -4,7 +4,9 @@ import { PrinterService } from '../../services/printer.service';
 import { Printer } from '../../models/printer.model';
 import { ModalController, ToastController } from '@ionic/angular';
 import { DatePickerComponent } from '../../components/date-picker/date-picker.component';
-
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { PRINTER_TYPES } from 'src/app/constants/printer-types.constant';
 @Component({
   selector: 'app-printer-detail',
   templateUrl: './printer-detail.page.html',
@@ -15,6 +17,12 @@ export class PrinterDetailPage implements OnInit {
   printer!: Printer;
   originalId!: number;
   commissioningDateString!: string;
+  printerTypes = PRINTER_TYPES;
+
+  private datePickerClick$ = new Subject<void>();
+
+  isDatePickerOpen: boolean = false;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -22,7 +30,12 @@ export class PrinterDetailPage implements OnInit {
     private toastController: ToastController,
     private modalController: ModalController,
     private router: Router
-  ) {}
+  ) {
+    // Debounce the date picker click to 300ms (ran into a problem where the date-picker component appears twice)
+    this.datePickerClick$.pipe(debounceTime(300)).subscribe(() => {
+      this.openDatePicker();
+    });
+  }
 
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -51,6 +64,10 @@ export class PrinterDetailPage implements OnInit {
     }
   }
 
+  onDateInputClick() {
+    this.datePickerClick$.next();
+  }
+
   onPrinterTypeChange() {
     this.printer.imageUrl = this.printerService.getImageUrlForType(this.printer.type);
   }
@@ -73,20 +90,28 @@ export class PrinterDetailPage implements OnInit {
   }
   
   async openDatePicker() {
+    // Check if the modal is already open
+    if (this.isDatePickerOpen) {
+      return;
+    }
+
+    this.isDatePickerOpen = true;
+
     const modal = await this.modalController.create({
       component: DatePickerComponent,
       componentProps: {
         selectedDate: this.printer.commissioningDate,
       },
     });
-  
+
     modal.onDidDismiss().then((data) => {
       if (data.data) {
         this.printer.commissioningDate = data.data;
         this.commissioningDateString = this.formatDate(this.printer.commissioningDate);
       }
+      this.isDatePickerOpen = false;
     });
-  
+
     return await modal.present();
   }
 
@@ -100,7 +125,7 @@ export class PrinterDetailPage implements OnInit {
     });
     await toast.present();
 
-    // Optionally, navigate back to the printer list
+    //navigate back to the printer list
     this.router.navigate(['/printer-list']);
   }
 
@@ -109,7 +134,29 @@ export class PrinterDetailPage implements OnInit {
     this.router.navigate(['/printer-list']);
   }
 
-  scheduleMaintenance() {
+
+  async scheduleMaintenance() {
     // To be implemented in Part 3
+    const toast = await this.toastController.create({
+      message: 'Schedule Maintenance feature is not yet implemented.',
+      duration: 2000,
+      position: 'bottom',
+      color: 'warning',
+    });
+    await toast.present();
+  }
+
+  cancel() {
+    this.router.navigate(['/printer-list']);
+  }
+
+  async presentToast(message: string, color: string = 'success') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'bottom',
+    });
+    await toast.present();
   }
 }

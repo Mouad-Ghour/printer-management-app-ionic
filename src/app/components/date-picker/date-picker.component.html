@@ -2,24 +2,25 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="cancel()">
-        Cancel
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>Select Date</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="confirm()">
-        Done
+        <ion-icon slot="icon-only" name="checkmark-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class="callendar" >
-  <ion-datetime
-    [value]="selectedDate.toISOString()"
-    (ionChange)="onDateChange($event)"
-    presentation="date"
-  ></ion-datetime>
-  </div>  
+  <div class="calendar-container">
+    <ion-datetime
+      [value]="selectedDate.toISOString()"
+      (ionChange)="onDateChange($event)"
+      presentation="date"
+      displayFormat="DD/MM/YYYY"
+    ></ion-datetime>
+  </div>
 </ion-content>

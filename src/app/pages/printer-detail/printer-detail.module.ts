@@ -15,6 +15,6 @@ import { PrinterDetailPage } from './printer-detail.page';
     IonicModule,
     PrinterDetailPageRoutingModule
   ],
-  declarations: [PrinterDetailPage]
+  declarations: [PrinterDetailPage],
 })
 export class PrinterDetailPageModule {}
