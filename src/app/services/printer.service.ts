@@ -11,19 +11,19 @@ export class PrinterService {
   private printersSubject: BehaviorSubject<Printer[]> = new BehaviorSubject<Printer[]>([
     {
       id: 12,
-      type: PRINTER_TYPES[0], // PrinterType.Powder
+      type: PRINTER_TYPES[0], 
       commissioningDate: new Date('2021-01-15'),
       imageUrl: 'assets/images/powder-printer.png',
     },
     {
       id: 17,
-      type: PRINTER_TYPES[1], // PrinterType.Wire
+      type: PRINTER_TYPES[1],
       commissioningDate: new Date('2020-05-20'),
       imageUrl: 'assets/images/wire-printer.png',
     },
     {
       id: 22,
-      type: PRINTER_TYPES[2], // PrinterType.Resin
+      type: PRINTER_TYPES[2],
       commissioningDate: new Date('2019-08-10'),
       imageUrl: 'assets/images/resin-printer.png',
     },

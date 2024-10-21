@@ -47,3 +47,15 @@ ion-label p {
 font-size: 14px;
 color: #666;
 }
+
+ion-badge {
+  font-size: 0.8em;
+  padding: 0.5em;
+}
+
+@media (max-width: 600px) {
+  ion-badge {
+    font-size: 0.7em;
+    padding: 0.4em;
+  }
+}

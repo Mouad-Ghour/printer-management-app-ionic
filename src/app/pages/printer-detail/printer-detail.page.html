@@ -1,4 +1,3 @@
-<!-- src/app/pages/printer-detail/printer-detail.page.html -->
 
 <ion-header>
   <ion-toolbar>
@@ -75,4 +74,17 @@
       </ion-button>
     </div>
   </form>
+
+  <!-- Scheduled Maintenance Events (Optional) -->
+  <ion-list *ngIf="scheduledMaintenanceEvents.length > 0">
+    <ion-list-header>
+      <ion-label>Scheduled Maintenance</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let event of scheduledMaintenanceEvents">
+      <ion-label>
+        <h2>{{ event.title }}</h2>
+        <p>{{ event.date | date: 'fullDate' }} | {{ event.startTime | date: 'shortTime' }} - {{ event.endTime | date: 'shortTime' }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
