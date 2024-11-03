@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.mouad.printermanagementapp;
 
 import com.getcapacitor.BridgeActivity;
 

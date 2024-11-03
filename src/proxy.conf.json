@@ -1,0 +1,12 @@
+{
+    "/": {
+      "target": "http://localhost:8100",
+      "secure": false,
+      "changeOrigin": true,
+      "headers": {
+        "Cross-Origin-Opener-Policy": "unsafe-none",
+        "Cross-Origin-Embedder-Policy": "unsafe-none"
+      }
+    }
+  }
+  

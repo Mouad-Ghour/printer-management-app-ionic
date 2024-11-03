@@ -1,9 +1,12 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'com.mouad.printermanagementapp',
   appName: 'printer-management-app',
-  webDir: 'www'
+  webDir: 'www',
+  bundledWebRuntime: false
 };
 
 export default config;
+
+

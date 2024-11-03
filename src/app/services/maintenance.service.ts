@@ -1,9 +1,10 @@
-// src/app/services/maintenance.service.ts
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { MaintenanceEvent } from '../models/maintenance-event.model';
 import { Printer } from '../models/printer.model';
+import { Platform, ToastController } from '@ionic/angular';
+import { CalendarService } from './calendar.service';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,11 @@ export class MaintenanceService {
   private maintenanceEventsSubject: BehaviorSubject<MaintenanceEvent[]> = new BehaviorSubject<MaintenanceEvent[]>([]);
   private storageKey = 'maintenanceEvents';
 
-  constructor() {
+  constructor(
+    private platform: Platform,
+    private toastController: ToastController,
+    private calendarService: CalendarService
+  ) {
     this.loadEvents();
   }
 
@@ -20,15 +25,15 @@ export class MaintenanceService {
    * Schedules a maintenance event for the given printer.
    * @param printer The printer object.
    */
-  scheduleMaintenance(printer: Printer): void {
+  async scheduleMaintenance(printer: Printer): Promise<void> {
     const nextMonday = this.getNextMonday();
     const startTime = new Date(nextMonday);
-    startTime.setHours(8, 0, 0, 0); // 8:00 AM
+    startTime.setHours(8, 0, 0, 0);
 
     const endTime = new Date(nextMonday);
-    endTime.setHours(12, 0, 0, 0); // 12:00 PM
+    endTime.setHours(12, 0, 0, 0);
 
-    const title = `${printer.type} #${printer.id} maintenance.`;
+    const title = `${printer.type} #${printer.id} Maintenance`;
 
     const newEvent: MaintenanceEvent = {
       id: this.generateId(),
@@ -37,12 +42,33 @@ export class MaintenanceService {
       date: nextMonday,
       startTime,
       endTime,
+      calendarEventId: null,
     };
+    
+    
+    const eventId = await this.calendarService.createEvent(newEvent);
+    if (eventId) {
+      newEvent.calendarEventId = eventId;
+    } else {
+      // Event creation failed; throw an error
+      throw new Error('Failed to create calendar event.');
+    }
 
+    // Add the event to the local list
     const currentEvents = this.maintenanceEventsSubject.getValue();
     currentEvents.push(newEvent);
     this.maintenanceEventsSubject.next(currentEvents);
     this.saveEvents();
+
+
+    // // Display success toast (this might be better handled in the component)
+    // const successToast = await this.toastController.create({
+    //   message: 'Maintenance event added to Google Calendar.',
+    //   duration: 2000,
+    //   position: 'bottom',
+    //   color: 'success',
+    // });
+    // await successToast.present();
   }
 
   /**
@@ -53,28 +79,56 @@ export class MaintenanceService {
   }
 
   /**
-   * Retrieves maintenance events for a specific printer.
-   * @param printerId The ID of the printer.
-   */
-  getMaintenanceEventsForPrinter(printerId: number): MaintenanceEvent[] {
-    return this.maintenanceEventsSubject.getValue().filter(event => event.printerId === printerId);
+ * Retrieves maintenance events for a specific printer as an observable.
+ * @param printerId The ID of the printer.
+ */
+  getMaintenanceEventsForPrinter(printerId: number): Observable<MaintenanceEvent[]> {
+    return this.maintenanceEventsSubject.asObservable().pipe(
+      map(events => events.filter(event => event.printerId === printerId))
+    );
   }
+
 
   /**
    * Deletes a maintenance event by its ID.
    * @param eventId The ID of the maintenance event to delete.
    */
-  deleteMaintenanceEvent(eventId: number): void {
+  async deleteMaintenanceEvent(eventId: number): Promise<void> {
     const currentEvents = this.maintenanceEventsSubject.getValue();
     const index = currentEvents.findIndex(event => event.id === eventId);
     if (index !== -1) {
+      const eventToDelete = currentEvents[index];
+
+      if (eventToDelete.calendarEventId) {
+        const success = await this.calendarService.deleteEvent(eventToDelete.calendarEventId);
+        if (!success) {
+          return;
+        }
+      }
+
       currentEvents.splice(index, 1);
       this.maintenanceEventsSubject.next(currentEvents);
       this.saveEvents();
+
+      const toast = await this.toastController.create({
+        message: 'Maintenance event deleted.',
+        duration: 2000,
+        position: 'bottom',
+        color: 'warning',
+      });
+      await toast.present();
     } else {
-      console.error(`Maintenance event with ID ${eventId} not found.`);
+      const toast = await this.toastController.create({
+        message: `Maintenance event with ID ${eventId} not found.`,
+        duration: 2000,
+        position: 'bottom',
+        color: 'danger',
+      });
+      await toast.present();
     }
   }
+
+
 
   /**
    * Loads maintenance events from local storage.
@@ -111,11 +165,11 @@ export class MaintenanceService {
    */
   private getNextMonday(): Date {
     const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
-    const daysUntilNextMonday = ((8 - dayOfWeek) % 7) || 7; // Ensures at least 1 day
+    const dayOfWeek = today.getDay();
+    const daysUntilNextMonday = ((8 - dayOfWeek) % 7) || 7;
     const nextMonday = new Date(today);
     nextMonday.setDate(today.getDate() + daysUntilNextMonday);
-    nextMonday.setHours(0, 0, 0, 0); // Reset to midnight
+    nextMonday.setHours(0, 0, 0, 0);
     return nextMonday;
   }
 

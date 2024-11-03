@@ -23,22 +23,12 @@
   </div>
 
   <!-- Edit Form -->
-  <form (ngSubmit)="savePrinter()" #printerForm="ngForm" class="edit-form" *ngIf="printer">
-    <!-- Printer Type Selection -->
-    <ion-item>
-      <ion-label position="stacked">Printer Type</ion-label>
-      <ion-select
-        [(ngModel)]="printer.type"
-        name="type"
-        required
-        interface="popover"
-        (ionChange)="onPrinterTypeChange()"
-      >
-        <ion-select-option *ngFor="let type of printerTypes" [value]="type">
-          {{ type }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
+  <ion-item>
+    <ion-label>Type</ion-label>
+    <ion-select [(ngModel)]="printer.type" (ionChange)="onPrinterTypeChange()">
+      <ion-select-option *ngFor="let type of printerTypes">{{ type }}</ion-select-option>
+    </ion-select>
+  </ion-item>
 
     <!-- Printer ID Input -->
     <ion-item>
@@ -64,27 +54,25 @@
       ></ion-input>
     </ion-item>
 
-    <!-- Buttons Container -->
-    <div class="button-container">
-      <ion-button expand="block" type="submit" color="primary" [disabled]="printerForm.invalid">
-        Save Changes
-      </ion-button>
-      <ion-button expand="block" color="secondary" (click)="scheduleMaintenance()">
-        Schedule Maintenance
-      </ion-button>
-    </div>
-  </form>
+  <!-- Schedule Maintenance Button -->
+  <ion-button expand="block" (click)="scheduleMaintenance()">Schedule Maintenance</ion-button>
 
-  <!-- Scheduled Maintenance Events (Optional) -->
-  <ion-list *ngIf="scheduledMaintenanceEvents.length > 0">
-    <ion-list-header>
-      <ion-label>Scheduled Maintenance</ion-label>
-    </ion-list-header>
+  <!-- List of Scheduled Maintenance Events -->
+  <ion-list>
+    <ion-item-divider>
+      <ion-label>Scheduled Maintenance Events</ion-label>
+    </ion-item-divider>
     <ion-item *ngFor="let event of scheduledMaintenanceEvents">
       <ion-label>
-        <h2>{{ event.title }}</h2>
-        <p>{{ event.date | date: 'fullDate' }} | {{ event.startTime | date: 'shortTime' }} - {{ event.endTime | date: 'shortTime' }}</p>
+        {{ event.title }} on {{ event.date | date:'fullDate' }}
       </ion-label>
+      <ion-button slot="end" color="danger" (click)="deleteMaintenance(event.id)">
+        Delete
+      </ion-button>
     </ion-item>
   </ion-list>
+
+  <!-- Save and Cancel Buttons -->
+  <ion-button expand="block" (click)="savePrinter()">Save</ion-button>
+  <ion-button expand="block" color="medium" (click)="cancel()">Cancel</ion-button>
 </ion-content>

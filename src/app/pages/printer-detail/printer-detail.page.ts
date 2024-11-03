@@ -9,6 +9,10 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { PRINTER_TYPES } from '../../constants/printer-types.constant';
 import { MaintenanceEvent } from '../../models/maintenance-event.model';
+import { AuthService } from '../../services/auth.service'; // Import AuthService
+import { AlertController } from '@ionic/angular'; // Import AlertController
+
+
 @Component({
   selector: 'app-printer-detail',
   templateUrl: './printer-detail.page.html',
@@ -20,27 +24,21 @@ export class PrinterDetailPage implements OnInit {
   originalId!: number;
   commissioningDateString!: string;
 
-  // Flag to track if the date picker modal is open
   isDatePickerOpen: boolean = false;
-
-  // Subject for debouncing click events
   private datePickerClick$ = new Subject<void>();
-
-  // Importing PRINTER_TYPES
   printerTypes = PRINTER_TYPES;
-
-  // To hold scheduled maintenance events
   scheduledMaintenanceEvents: MaintenanceEvent[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private printerService: PrinterService,
     private maintenanceService: MaintenanceService,
+    private alertController: AlertController,
     private toastController: ToastController,
     private modalController: ModalController,
-    private router: Router
+    private router: Router,
+    private authService: AuthService,
   ) {
-    // Debounce the date picker click to 300ms
     this.datePickerClick$.pipe(debounceTime(300)).subscribe(() => {
       this.openDatePicker();
     });
@@ -52,22 +50,12 @@ export class PrinterDetailPage implements OnInit {
       this.printerId = +idParam;
       const printerData = this.printerService.getPrinterById(this.printerId);
       if (printerData) {
-        // Deep copy to avoid mutating the original object before save
         this.printer = { ...printerData };
-        // Ensure commissioningDate is a Date object
         this.printer.commissioningDate = new Date(this.printer.commissioningDate);
-
-        // Store the original ID
         this.originalId = this.printer.id;
-
-        // Initialize the commissioningDateString
         this.commissioningDateString = this.formatDate(this.printer.commissioningDate);
-
-        // Update imageUrl based on the current printer type
         this.onPrinterTypeChange();
-
-        // Retrieve and display scheduled maintenance events
-        this.scheduledMaintenanceEvents = this.maintenanceService.getMaintenanceEventsForPrinter(this.printer.id);
+        this.loadScheduledMaintenance();
       } else {
         console.error('Printer not found');
       }
@@ -76,9 +64,19 @@ export class PrinterDetailPage implements OnInit {
     }
   }
 
+
+  loadScheduledMaintenance() {
+    this.maintenanceService.getMaintenanceEventsForPrinter(this.printer.id)
+      .subscribe(events => {
+        this.scheduledMaintenanceEvents = events;
+      });
+  }
+
+
   onPrinterTypeChange() {
     this.printer.imageUrl = this.printerService.getImageUrlForType(this.printer.type);
   }
+
 
   onDateChange(event: any) {
     this.printer.commissioningDate = new Date(event.detail.value);
@@ -156,19 +154,86 @@ export class PrinterDetailPage implements OnInit {
   /**
    * Schedules a maintenance event for the next Monday from 8 AM to 12 PM.
    */
+
   async scheduleMaintenance() {
-    this.maintenanceService.scheduleMaintenance(this.printer);
+    try {
+      await this.maintenanceService.scheduleMaintenance(this.printer);
+  
+      // Update the local maintenance events list
+      this.loadScheduledMaintenance();
+  
+      const toast = await this.toastController.create({
+        message: 'Maintenance scheduled and added to Google Calendar.',
+        duration: 2000,
+        position: 'bottom',
+        color: 'success',
+      });
+      await toast.present();
+    } catch (error) {
+      // Display an error toast with the error message
+      const toast = await this.toastController.create({
+        message: (error instanceof Error ? error.message : 'Failed to schedule maintenance.'),
+        duration: 2000,
+        position: 'bottom',
+        color: 'danger',
+      });
+      await toast.present();
+    }
+  }
 
-    // Update the local maintenance events list
-    this.scheduledMaintenanceEvents = this.maintenanceService.getMaintenanceEventsForPrinter(this.printer.id);
 
-    const toast = await this.toastController.create({
-      message: 'Maintenance scheduled for next Monday from 8 AM to 12 PM.',
-      duration: 2000,
-      position: 'bottom',
-      color: 'success',
+  /**
+   * Deletes a maintenance event.
+   * @param eventId The ID of the maintenance event to delete.
+   */
+  async deleteMaintenance(eventId: number) {
+    // Confirm deletion with the user
+    const confirmed = await this.presentConfirmDialog();
+    if (confirmed) {
+      await this.maintenanceService.deleteMaintenanceEvent(eventId);
+
+      // Update the local maintenance events list
+      this.loadScheduledMaintenance();
+
+      // Show a success toast
+      const toast = await this.toastController.create({
+        message: 'Maintenance event deleted successfully.',
+        duration: 2000,
+        position: 'bottom',
+        color: 'warning',
+      });
+      await toast.present();
+    }
+  }
+
+  /**
+   * Presents a confirmation dialog before deletion.
+   * @returns A promise that resolves to true if confirmed, false otherwise.
+   */
+  private async presentConfirmDialog(): Promise<boolean> {
+    return new Promise(async (resolve) => {
+      const alert = await this.alertController.create({
+        header: 'Confirm Deletion',
+        message: 'Are you sure you want to delete this maintenance event?',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+              resolve(false);
+            },
+          },
+          {
+            text: 'Delete',
+            handler: () => {
+              resolve(true);
+            },
+          },
+        ],
+      });
+
+      await alert.present();
     });
-    await toast.present();
   }
 
   /**

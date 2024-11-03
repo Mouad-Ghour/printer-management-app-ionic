@@ -5,4 +5,5 @@ export interface MaintenanceEvent {
     date: Date;
     startTime: Date;
     endTime: Date;
+    calendarEventId?: string | null;
   }

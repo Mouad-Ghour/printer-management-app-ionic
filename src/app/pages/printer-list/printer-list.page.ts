@@ -1,5 +1,3 @@
-// src/app/pages/printer-list/printer-list.page.ts
-
 import { Component, OnInit } from '@angular/core';
 import { PrinterService } from '../../services/printer.service';
 import { MaintenanceService } from '../../services/maintenance.service';
@@ -8,6 +6,7 @@ import { MaintenanceEvent } from '../../models/maintenance-event.model';
 import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ToastController, AlertController } from '@ionic/angular';
+import { AuthService } from '../../services/auth.service';
 
 interface PrinterWithMaintenance {
   printer: Printer;
@@ -20,14 +19,15 @@ interface PrinterWithMaintenance {
   styleUrls: ['./printer-list.page.scss'],
 })
 export class PrinterListPage implements OnInit {
-  sortCriteria: string = 'id'; // Default sorting criteria
+  sortCriteria: string = 'id';
   printersWithMaintenance$: Observable<PrinterWithMaintenance[]>;
 
   constructor(
     private printerService: PrinterService,
     private maintenanceService: MaintenanceService,
     private toastController: ToastController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private authService: AuthService,
   ) {
     // Combine printers and maintenance events
     this.printersWithMaintenance$ = combineLatest([
@@ -57,6 +57,33 @@ export class PrinterListPage implements OnInit {
   }
 
   ngOnInit() {}
+
+  async signIn() {
+    const token = await this.authService.signIn();
+    if (token) {
+      console.log('Signed in with token:', token);
+      const toast = await this.toastController.create({
+        message: 'Signed in successfully.',
+        duration: 2000,
+        position: 'bottom',
+        color: 'success',
+      });
+      await toast.present();
+    }
+  }
+
+  async signOut() {
+    await this.authService.signOut();
+    console.log('Signed out');
+    const toast = await this.toastController.create({
+      message: 'Signed out successfully.',
+      duration: 2000,
+      position: 'bottom',
+      color: 'warning',
+    });
+    await toast.present();
+  }
+
 
   /**
    * Sorts the printers based on the selected criteria.
