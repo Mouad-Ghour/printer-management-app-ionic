@@ -2,7 +2,6 @@
   display: flex;
   align-items: center;
   padding: 10px;
-  background-color: #000000;
   margin: 10px;
   border-radius: 8px;
 }
@@ -32,7 +31,7 @@
 
 .printer-details p {
   font-size: 14px;
-  color: #7f7b7b;
+  // color: #7f7b7b;
   margin: 5px 0 0 0;
 }
 
@@ -72,3 +71,9 @@
 .button-container ion-button:last-child {
   margin-right: 0;
 }
+// // make it to the left of the screen
+// .edit-form {
+//   padding: 10px;
+//   margin-left: 10px;
+//   margin-right: 10px;
+// }

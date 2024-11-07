@@ -163,21 +163,31 @@ export class PrinterDetailPage implements OnInit {
       this.loadScheduledMaintenance();
   
       const toast = await this.toastController.create({
-        message: 'Maintenance scheduled and added to Google Calendar.',
+        message: 'Maintenance scheduled and added to the Calendar.',
         duration: 2000,
         position: 'bottom',
         color: 'success',
       });
       await toast.present();
     } catch (error) {
-      // Display an error toast with the error message
-      const toast = await this.toastController.create({
-        message: (error instanceof Error ? error.message : 'Failed to schedule maintenance.'),
-        duration: 2000,
-        position: 'bottom',
-        color: 'danger',
-      });
-      await toast.present();
+      // Handle the case when an event already exists
+      if (error instanceof Error && error.message.includes('already scheduled')) {
+        const alert = await this.alertController.create({
+          header: 'Event Already Scheduled',
+          message: 'A maintenance event is already scheduled for this printer.',
+          buttons: ['OK'],
+        });
+        await alert.present();
+      } else {
+        // Display a general error toast
+        const toast = await this.toastController.create({
+          message: 'Failed to schedule maintenance.',
+          duration: 2000,
+          position: 'bottom',
+          color: 'danger',
+        });
+        await toast.present();
+      }
     }
   }
 

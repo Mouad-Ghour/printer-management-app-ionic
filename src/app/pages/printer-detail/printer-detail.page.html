@@ -23,12 +23,14 @@
   </div>
 
   <!-- Edit Form -->
+  <div class="edit-form">
   <ion-item>
     <ion-label>Type</ion-label>
     <ion-select [(ngModel)]="printer.type" (ionChange)="onPrinterTypeChange()">
       <ion-select-option *ngFor="let type of printerTypes">{{ type }}</ion-select-option>
     </ion-select>
   </ion-item>
+  </div>
 
     <!-- Printer ID Input -->
     <ion-item>
