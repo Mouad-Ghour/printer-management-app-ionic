@@ -21,9 +21,9 @@ export class CalendarService {
         return null;
       }
     }
-
+  
     const url = 'https://www.googleapis.com/calendar/v3/calendars/primary/events';
-
+  
     const eventDetails = {
       summary: event.title,
       description: `Maintenance for Printer #${event.printerId}`,
@@ -43,7 +43,7 @@ export class CalendarService {
         ],
       },
     };
-
+  
     const options = {
       url,
       headers: {
@@ -51,15 +51,16 @@ export class CalendarService {
         'Content-Type': 'application/json',
       },
       data: eventDetails,
+      params: {},
     };
-
+  
     try {
       const response = await Http.post(options);
       console.log('Event created:', response.data);
       return response.data.id;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating event:', error);
-      await this.showToast('Failed to create calendar event.');
+      await this.showToast(`Failed to create calendar event: ${error.message || error}`);
       return null;
     }
   }
@@ -72,26 +73,28 @@ export class CalendarService {
         return false;
       }
     }
-
+  
     const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`;
-
+  
     const options = {
       url,
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      params: {},
     };
-
+  
     try {
       await Http.del(options);
       console.log(`Event ${eventId} deleted successfully.`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete calendar event:', error);
-      await this.showToast('Failed to delete calendar event.');
+      await this.showToast(`Failed to delete calendar event: ${error.message || error}`);
       return false;
     }
   }
+  
 
   private async showToast(message: string): Promise<void> {
     const toast = await this.toastController.create({

@@ -27,10 +27,11 @@ describe('MaintenanceService', () => {
     };
 
     service.scheduleMaintenance(printer);
-    const events = service.getMaintenanceEventsForPrinter(printer.id);
-    expect(events.length).toBe(1);
-    expect(events[0].printerId).toBe(printer.id);
-    expect(events[0].title).toBe(`${printer.type} #${printer.id} maintenance.`);
+    service.getMaintenanceEventsForPrinter(printer.id).subscribe(events => {
+      expect(events.length).toBe(1);
+      expect(events[0].printerId).toBe(printer.id);
+      expect(events[0].title).toBe(`${printer.type} #${printer.id} maintenance.`);
+    });
   });
 
   it('should delete a maintenance event', () => {
@@ -42,12 +43,14 @@ describe('MaintenanceService', () => {
     };
 
     service.scheduleMaintenance(printer);
-    let events = service.getMaintenanceEventsForPrinter(printer.id);
-    expect(events.length).toBe(1);
+    service.getMaintenanceEventsForPrinter(printer.id).subscribe(events => {
+      expect(events.length).toBe(1);
 
-    service.deleteMaintenanceEvent(events[0].id);
-    events = service.getMaintenanceEventsForPrinter(printer.id);
-    expect(events.length).toBe(0);
+      service.deleteMaintenanceEvent(events[0].id);
+      service.getMaintenanceEventsForPrinter(printer.id).subscribe(updatedEvents => {
+        expect(updatedEvents.length).toBe(0);
+      });
+    });
   });
 
   it('should persist maintenance events in local storage', () => {
@@ -62,8 +65,9 @@ describe('MaintenanceService', () => {
 
     // Reload the service to simulate app restart
     const newServiceInstance = TestBed.inject(MaintenanceService);
-    const events = newServiceInstance.getMaintenanceEventsForPrinter(printer.id);
-    expect(events.length).toBe(1);
-    expect(events[0].printerId).toBe(printer.id);
+    newServiceInstance.getMaintenanceEventsForPrinter(printer.id).subscribe(events => {
+      expect(events.length).toBe(1);
+      expect(events[0].printerId).toBe(printer.id);
+    });
   });
 });

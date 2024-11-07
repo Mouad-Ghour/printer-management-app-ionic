@@ -46,14 +46,14 @@ export class AuthService {
 
   async signIn(): Promise<string | null> {
     if (this.platform.is('capacitor')) {
-      // Native platforms
       try {
         const user = await GoogleAuth.signIn();
+        console.log('User Info:', user);
         this.accessToken = user.authentication.accessToken;
         return this.accessToken;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Google Sign-In Error:', error);
-        await this.showToast('Google Sign-In failed.');
+        await this.showToast(`Google Sign-In failed: ${error.code}`);
         return null;
       }
     } else {

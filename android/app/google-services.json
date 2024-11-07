@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "870897044054",
+    "project_id": "printer-app-440617",
+    "storage_bucket": "printer-app-440617.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:870897044054:android:82305d2be66c918a4749f7",
+        "android_client_info": {
+          "package_name": "com.mouad.printermanagementapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "870897044054-ftd4mi20fh6rsqvaef4s31g6u4buduaf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mouad.printermanagementapp",
+            "certificate_hash": "e043ffb1ebd60bb1a7fe6c10f0652352d3bb2751"
+          }
+        },
+        {
+          "client_id": "870897044054-qmd73kg39nrml2fbuq4dgjfgib1ldcfh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMHuVguAq3Lho1NpOugre9UoSYS3S_p9Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "870897044054-qmd73kg39nrml2fbuq4dgjfgib1ldcfh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "870897044054-igli3e1lllnshn6540has9nokqcqbken.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mouad.printermanagementapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,13 @@
+{
+    "appId": "com.mouad.printermanagementapp",
+    "appName": "Printer Management App",
+    "webDir": "www",
+    "plugins": {
+      "GoogleAuth": {
+        "scopes": ["profile", "email", "https://www.googleapis.com/auth/calendar.events"],
+        "serverClientId": "870897044054-qmd73kg39nrml2fbuq4dgjfgib1ldcfh.apps.googleusercontent.com",
+        "forceCodeForRefreshToken": true
+      }
+    }
+  }
+  
