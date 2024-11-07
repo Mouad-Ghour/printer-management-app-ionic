@@ -9,8 +9,8 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { PRINTER_TYPES } from '../../constants/printer-types.constant';
 import { MaintenanceEvent } from '../../models/maintenance-event.model';
-import { AuthService } from '../../services/auth.service'; // Import AuthService
-import { AlertController } from '@ionic/angular'; // Import AlertController
+import { AuthService } from '../../services/auth.service'; 
+import { AlertController } from '@ionic/angular'; 
 
 
 @Component({
